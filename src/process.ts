@@ -1,4 +1,6 @@
-var cssLoader = require('css-loader');
+const cssLoader = require('css-loader');
+const less = require('less');
+import { SourceMapConsumer } from 'source-map';
 
 function runLoader(loader, input, map, addOptions, callback) {
     var opt = {
@@ -34,7 +36,7 @@ function removeImportfromSouce(source: string) {
 
 function processCss(source) {
     runLoader(cssLoader, source, undefined, {
-        query: '?module&sourceMap&localIdentName=_[local]_'
+        query: '?module&localIdentName=_[local]_'
     }, function (err, output) {
         try {
             const text = removeImportfromSouce(output);
@@ -50,9 +52,7 @@ function processCss(source) {
             const requireFaker = function(){}
             const context = new Function('exports', 'module', 'require', text);
             context(exportsFaker, moduleFaker, requireFaker);
-            const sourceMap = pushFaker[0][3];
             const locals = exportsFaker.locals;
-            console.log(sourceMap);
             console.log(locals);
         } catch (error) {
             console.log(error);
@@ -60,19 +60,63 @@ function processCss(source) {
     });
 }
 
-export function process() {
-    const source =
-        `   /*
-    * a ' above
-    */
-
-   .bg {
-     background-image: url(bg.jpg);
-   }
-
-   /*
-    * a ' below
-    */
-`
-   processCss(source);
+function processLess(source, callback) {
+    less.render(source,  {sourceMap: { outputSourceFiles: true}})
+    .then((output) => {
+        console.log(output)
+        console.log(JSON.parse(output.map))
+        callback(output.css, JSON.parse(output.map));
+    }).catch((err) => {
+        console.error(err);
+    });
 }
+
+export async function process() {
+//     const source =
+//         `   /*
+//     * a ' above
+//     */
+
+//    .bg {
+//      background-image: url(bg.jpg);
+//    }
+
+//    /*
+//     * a ' below
+//     */
+// `
+//    processCss(source);
+
+    const sources = `
+    /*
+     * comment
+     */
+
+     .a {
+         .b {
+             color: #ffffff;
+         }
+     }
+
+     // Variables
+@my-selector: banner;
+
+// Usage
+.@{my-selector} {
+  font-weight: bold;
+  line-height: 40px;
+  margin: 0 auto;
+}
+`
+    const callback = async (css, sourceMap) => {
+        sourceMap.sources = ['test.css'];
+
+        // const consumer = await new SourceMapConsumer(sourceMap);
+        // consumer.eachMapping(function (m) { console.log(m); })
+        processCss(css);
+    }
+
+    processLess(sources, callback);
+}
+
+// 在css文件中 找.xxxx 定位位置，在less中不行，因为有可能xxx在less中是一个变量，此时xxx在css中是一定会出现的，可以通过sourcemap找到css和less文件的对应
