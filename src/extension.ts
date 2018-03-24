@@ -1,8 +1,6 @@
 'use strict';
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-import { process } from './process';
+import CompletionProvider from './CompletionProvider';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -20,10 +18,12 @@ export function activate(context: vscode.ExtensionContext) {
 
         // Display a message box to the user
         vscode.window.showInformationMessage('Hello World!');
-        process();
     });
 
-    context.subscriptions.push(disposable);
+    let completetion = vscode.languages.registerCompletionItemProvider(
+        ['javascript', 'typescript', 'javascriptreact', 'typescriptreact', 'vue'], new CompletionProvider(), '.');
+
+    context.subscriptions.push(disposable, completetion);
 }
 
 // this method is called when your extension is deactivated
