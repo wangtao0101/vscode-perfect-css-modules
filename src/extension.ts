@@ -1,7 +1,8 @@
 'use strict';
 import * as vscode from 'vscode';
 import CompletionProvider from './CompletionProvider';
-import DefinitionProvider from './DefinitionProvider';
+import CSSModuleDefinitionProvider from './DefinitionProvider';
+import CSSModuleHoverProvider from './HoverProvider';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -29,9 +30,10 @@ export function activate(context: vscode.ExtensionContext) {
     ];
 
     const completetion = vscode.languages.registerCompletionItemProvider(mode, new CompletionProvider(), '.');
-    const definition = vscode.languages.registerDefinitionProvider(mode, new DefinitionProvider())
+    const definition = vscode.languages.registerDefinitionProvider(mode, new CSSModuleDefinitionProvider())
+    const hover = vscode.languages.registerHoverProvider(mode, new CSSModuleHoverProvider())
 
-    context.subscriptions.push(disposable, completetion, definition);
+    context.subscriptions.push(disposable, completetion, definition, hover);
 }
 
 // this method is called when your extension is deactivated
