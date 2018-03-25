@@ -3,24 +3,8 @@ import findImportObjects from './findImportObjects';
 import * as path from 'path';
 import * as fs from 'fs';
 import processLess from './less/processLess';
+import getWordBeforeDot from './util/getWordBeforeDot';
 
-function getWordBeforeDot(document, dotPosition) {
-    let word = null;
-
-    const start = new vscode.Position(dotPosition.line, dotPosition.character - 1);
-    const end = new vscode.Position(dotPosition.line, dotPosition.character);
-    const charBeforeRange = document.getText(new vscode.Range(start, end));
-
-    // if is dot, we get the preview word and at least current dotPosition.character >= 2.
-    if (charBeforeRange === '.' && dotPosition.character >= 2) {
-        const posiontBeforeDot = new vscode.Position(dotPosition.line, dotPosition.character - 2);
-        const range = document.getWordRangeAtPosition(posiontBeforeDot);
-        if (range) {
-            word = document.getText(new vscode.Range(range.start, range.end));
-        };
-    }
-    return word;
-}
 
 export default class CompletionProvider implements vscode.CompletionItemProvider {
     public async provideCompletionItems(document: vscode.TextDocument, position: vscode.Position,

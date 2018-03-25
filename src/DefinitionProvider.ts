@@ -1,0 +1,52 @@
+import * as vscode from "vscode";
+import * as path from "path";
+import * as fs from "fs";
+import getWordBeforeDot from './util/getWordBeforeDot';
+import findImportObjects from "./findImportObjects";
+import processLess from "./less/processLess";
+
+export default class CSSModuleDefinitionProvider implements vscode.DefinitionProvider {
+    public async provideDefinition(document: vscode.TextDocument, position: vscode.Position,
+        token: vscode.CancellationToken): Promise<vscode.Definition> {
+        const range = document.getWordRangeAtPosition(position);
+        if (range == null) {
+            return null;
+        }
+        const wordToDefinition = document.getText(new vscode.Range(range.start, range.end));
+        const identifier = getWordBeforeDot(document, range.start);
+
+        if (identifier == null) {
+            // just a word
+        } else {
+            // find xxx.abc
+
+            const moduleSpecifier = findImportObjects(document.getText(), identifier);
+
+            if (moduleSpecifier == null) {
+                return [];
+            }
+
+            const uri = path.join(path.dirname(document.fileName), moduleSpecifier);
+            if (fs.existsSync(uri)) {
+                const source = fs.readFileSync(uri, 'utf-8');
+                const rootPath = vscode.workspace.getWorkspaceFolder(vscode.Uri.file(document.fileName)).uri.fsPath;
+                const locals = await processLess(source, rootPath, document.fileName);
+                let isFind = false;
+                Object.keys(locals).map(key => {
+                    if (key === wordToDefinition) {
+                        isFind = true;
+                    }
+                })
+                if (isFind) {
+                    const start = new vscode.Position(0, 0);
+                    const end = new vscode.Position(0, 1);
+                    return [
+                        new vscode.Location(vscode.Uri.file(uri), new vscode.Range(start, end)),
+                    ]
+                }
+            }
+            return null;
+        }
+
+    }
+}

@@ -1,6 +1,7 @@
 'use strict';
 import * as vscode from 'vscode';
 import CompletionProvider from './CompletionProvider';
+import DefinitionProvider from './DefinitionProvider';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -20,10 +21,17 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.window.showInformationMessage('Hello World!');
     });
 
-    let completetion = vscode.languages.registerCompletionItemProvider(
-        ['javascript', 'typescript', 'javascriptreact', 'typescriptreact', 'vue'], new CompletionProvider(), '.');
+    const mode: vscode.DocumentFilter[] = [
+        { language: "javascript", scheme: "file" },
+        { language: "typescript", scheme: "file" },
+        { language: "typescriptreact", scheme: "file" },
+        { language: "typescriptreact", scheme: "file" },
+    ];
 
-    context.subscriptions.push(disposable, completetion);
+    const completetion = vscode.languages.registerCompletionItemProvider(mode, new CompletionProvider(), '.');
+    const definition = vscode.languages.registerDefinitionProvider(mode, new DefinitionProvider())
+
+    context.subscriptions.push(disposable, completetion, definition);
 }
 
 // this method is called when your extension is deactivated
