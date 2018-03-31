@@ -1,7 +1,7 @@
 const less = require('less');
 import { SourceMapConsumer } from 'source-map';
 import * as path from 'path';
-import getLocals from '../getLocals';
+import getLocals from '../util/getLocals';
 import LessImportPlugin from './lessImportPlugin';
 import { StyleObject } from '../typings';
 const vfile = require('vfile');
@@ -49,7 +49,7 @@ function getOriginalPositions(sourceMapConsumer, className, css: string = '', cs
 async function addPositoinForLocals(localKeys, css, sourceMap) {
     const locals = {};
     let consumer = null;
-    let location = {};
+    let location = null;
     if (sourceMap != null) {
         location = vfileLocation(vfile(css));
         consumer = await new SourceMapConsumer(sourceMap);

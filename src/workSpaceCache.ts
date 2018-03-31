@@ -2,6 +2,7 @@ import { WorkspaceFolder, RelativePattern, FileSystemWatcher } from 'vscode';
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import processLess from './less/processLess';
+import processCss from './css/processCss';
 
 const isLess = /\.less$/;
 const isCss = /\.css$/;
@@ -11,18 +12,19 @@ export default class WorkSpaceCache {
     private workspaceFolder: WorkspaceFolder;
     private cache = {};
     private camelCase;
+    private filesToScan;
 
     constructor(workspaceFolder: WorkspaceFolder) {
         this.workspaceFolder = workspaceFolder;
         this.camelCase = vscode.workspace.getConfiguration('perfect-css-modules', this.workspaceFolder.uri).get<string>('camelCase');
+        this.filesToScan = vscode.workspace.getConfiguration('perfect-css-modules', this.workspaceFolder.uri).get<string>('filesToScan');
 
         this.processAllStyleFile();
         this.addFileWatcher();
     }
 
     private addFileWatcher() {
-        // TODO: filter file not in src
-        const watcher = vscode.workspace.createFileSystemWatcher(new RelativePattern(this.workspaceFolder, '**/*.{less}'));
+        const watcher = vscode.workspace.createFileSystemWatcher(new RelativePattern(this.workspaceFolder, this.filesToScan));
         watcher.onDidChange((file: vscode.Uri) => {
             this.processStyleFile(file);
         })
@@ -36,8 +38,7 @@ export default class WorkSpaceCache {
     }
 
     private async processAllStyleFile() {
-        // TODO: filter file not in src
-        const relativePattern = new RelativePattern(this.workspaceFolder, '**/*.{less}');
+        const relativePattern = new RelativePattern(this.workspaceFolder, this.filesToScan);
         const files = await vscode.workspace.findFiles(relativePattern, '{**/node_modules/**}', 99999);
         files.forEach(file => {
             this.processStyleFile(file);
@@ -51,6 +52,11 @@ export default class WorkSpaceCache {
             }
             if (file.fsPath.match(isLess)) {
                 processLess(data, this.workspaceFolder.uri.fsPath, file.fsPath, this.camelCase)
+                .then(result => {
+                    this.cache[file.fsPath] = result;
+                })
+            } else if (file.fsPath.match(isCss)) {
+                processCss(data, file.fsPath, this.camelCase)
                 .then(result => {
                     this.cache[file.fsPath] = result;
                 })
