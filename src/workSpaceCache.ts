@@ -35,11 +35,7 @@ export default class WorkSpaceCache {
         this.fileWatcher.push(watcher);
     }
 
-    getStyleObject(fsPath: string) {
-        return this.cache[fsPath];
-    }
-
-    async processAllStyleFile() {
+    private async processAllStyleFile() {
         // TODO: filter file not in src
         const relativePattern = new RelativePattern(this.workspaceFolder, '**/*.{less}');
         const files = await vscode.workspace.findFiles(relativePattern, '{**/node_modules/**}', 99999);
@@ -48,7 +44,7 @@ export default class WorkSpaceCache {
         });
     }
 
-    processStyleFile(file: vscode.Uri) {
+    private processStyleFile(file: vscode.Uri) {
         fs.readFile(file.fsPath, 'utf8', (err, data) => {
             if (err) {
                 return console.log(err);
@@ -59,6 +55,16 @@ export default class WorkSpaceCache {
                     this.cache[file.fsPath] = result;
                 })
             }
+        })
+    }
+
+    public getStyleObject(fsPath: string) {
+        return this.cache[fsPath];
+    }
+
+    public dispose() {
+        this.fileWatcher.map(fw => {
+            fw.dispose();
         })
     }
 }

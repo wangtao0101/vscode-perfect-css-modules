@@ -20,7 +20,16 @@ export function activate(context: vscode.ExtensionContext) {
 
     Cache.buildCache();
 
-    context.subscriptions.push(completetion, definition, hover);
+    const wfWatcher = vscode.workspace.onDidChangeWorkspaceFolders((event) => {
+        event.added.map(item => {
+            Cache.buildWorkSpaceCache(item)
+        })
+        event.removed.map(item => {
+            Cache.deleteWorkSpaceCache(item)
+        });
+    })
+
+    context.subscriptions.push(wfWatcher, completetion, definition, hover);
 }
 
 // this method is called when your extension is deactivated

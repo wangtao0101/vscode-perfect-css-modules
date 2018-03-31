@@ -13,6 +13,18 @@ export default class Cache {
         }
     }
 
+    public static buildWorkSpaceCache(item: vscode.WorkspaceFolder) {
+        Cache.deleteWorkSpaceCache(item);
+        Cache.styleCache[item.uri.fsPath] = new WorkSpaceCache(item);
+    }
+
+    public static deleteWorkSpaceCache(item: vscode.WorkspaceFolder) {
+        if (Cache.styleCache[item.uri.fsPath] != null) {
+            Cache.styleCache[item.uri.fsPath].dispose();
+            delete Cache.styleCache[item.uri.fsPath];
+        }
+    }
+
     /**
      * get parsed style file objcet
      * @param uri file URI
