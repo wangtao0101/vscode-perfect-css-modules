@@ -5,7 +5,7 @@ import * as fs from 'fs';
 import { SourceMapConsumer } from 'source-map';
 import processLess from './less/processLess';
 import getWordBeforeDot from './util/getWordBeforeDot';
-import Cache from './cache';
+import Cache from './cache/cache';
 import { StyleObject } from './typings';
 
 export default class CompletionProvider implements vscode.CompletionItemProvider {

@@ -5,7 +5,7 @@ import getWordBeforeDot from './util/getWordBeforeDot';
 import findImportObjects from './util/findImportObjects';
 import processLess from './less/processLess';
 import { StyleObject, Local } from './typings';
-import Cache from './cache';
+import Cache from './cache/cache';
 
 export default class CSSModuleHoverProvider implements vscode.HoverProvider {
     public async provideHover(document: vscode.TextDocument, position: vscode.Position,

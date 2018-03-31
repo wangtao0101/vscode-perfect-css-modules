@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import CompletionProvider from './CompletionProvider';
 import CSSModuleDefinitionProvider from './DefinitionProvider';
 import CSSModuleHoverProvider from './HoverProvider';
-import Cache from './cache';
+import Cache from './cache/cache';
 
 export function activate(context: vscode.ExtensionContext) {
     console.log('perfect-css-moules extension is now active!');

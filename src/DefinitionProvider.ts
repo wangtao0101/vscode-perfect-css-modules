@@ -4,7 +4,7 @@ import * as fs from "fs";
 import getWordBeforeDot from './util/getWordBeforeDot';
 import findImportObjects from './util/findImportObjects';
 import processLess from "./less/processLess";
-import Cache from "./cache";
+import Cache from './cache/cache';
 import { StyleObject, Local } from './typings';
 
 export default class CSSModuleDefinitionProvider implements vscode.DefinitionProvider {
