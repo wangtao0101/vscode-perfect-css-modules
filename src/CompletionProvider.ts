@@ -2,11 +2,11 @@ import * as vscode from 'vscode';
 import findImportObjects from './util/findImportObjects';
 import * as path from 'path';
 import * as fs from 'fs';
+import { SourceMapConsumer } from 'source-map';
 import processLess from './less/processLess';
 import getWordBeforeDot from './util/getWordBeforeDot';
 import Cache from './cache';
 import { StyleObject } from './typings';
-
 
 export default class CompletionProvider implements vscode.CompletionItemProvider {
     public async provideCompletionItems(document: vscode.TextDocument, position: vscode.Position,
@@ -44,8 +44,7 @@ export default class CompletionProvider implements vscode.CompletionItemProvider
                     label: key,
                     kind: vscode.CompletionItemKind.Reference,
                     detail: key,
-                    // TODO: show source css/less/sacc code about key here
-                    documentation: '',
+                    documentation: locals[key].name,
                 });
             })
             return handlers;

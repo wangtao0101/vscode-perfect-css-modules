@@ -5,7 +5,7 @@ import getWordBeforeDot from './util/getWordBeforeDot';
 import findImportObjects from './util/findImportObjects';
 import processLess from "./less/processLess";
 import Cache from "./cache";
-import { StyleObject } from "./typings";
+import { StyleObject, Local } from './typings';
 
 export default class CSSModuleDefinitionProvider implements vscode.DefinitionProvider {
     public async provideDefinition(document: vscode.TextDocument, position: vscode.Position,
@@ -33,20 +33,29 @@ export default class CSSModuleDefinitionProvider implements vscode.DefinitionPro
             const style: StyleObject = Cache.getStyleObject(vscode.Uri.file(uri));
 
             if (style != null) {
-                const source = fs.readFileSync(uri, 'utf-8');
                 const locals = style.locals;
-                let isFind = false;
+                let matchLocal: Local = null;
                 Object.keys(locals).map(key => {
                     if (key === wordToDefinition) {
-                        isFind = true;
+                        matchLocal = locals[key];
                     }
                 })
-                if (isFind) {
-                    const start = new vscode.Position(0, 0);
-                    const end = new vscode.Position(0, 1);
-                    return [
-                        new vscode.Location(vscode.Uri.file(uri), new vscode.Range(start, end)),
-                    ]
+                if (matchLocal != null) {
+                    const position = [];
+                    let start;
+                    let end;
+                    if (matchLocal.positions.length === 0) {
+                        start = new vscode.Position(0, 0);
+                        end = new vscode.Position(0, 1);
+                        position.push(new vscode.Location(vscode.Uri.file(uri), new vscode.Range(start, end)))
+                    } else {
+                        matchLocal.positions.map(po => {
+                            start = new vscode.Position(po.line, po.column);
+                            end = new vscode.Position(po.line, po.column + matchLocal.name.length);
+                            position.push(new vscode.Location(vscode.Uri.file(po.source), new vscode.Range(start, end)))
+                        })
+                    }
+                    return position;
                 }
             }
             return null;

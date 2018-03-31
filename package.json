@@ -48,6 +48,8 @@
     "dependencies": {
         "css-loader": "^0.28.11",
         "less": "^3.0.1",
-        "parse-import-es6": "^0.5.9"
+        "parse-import-es6": "^0.5.9",
+        "vfile": "^2.3.0",
+        "vfile-location": "^2.0.2"
     }
 }

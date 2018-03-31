@@ -4,6 +4,71 @@ import * as path from 'path';
 import getLocals from '../getLocals';
 import LessImportPlugin from './lessImportPlugin';
 import { StyleObject } from '../typings';
+const vfile = require('vfile');
+const vfileLocation = require('vfile-location');
+
+function getOriginalPositions(sourceMapConsumer, className, css: string = '', cssLocation) {
+    const positions = [];
+    let offset = 0;
+    while (true) {
+        offset = css.indexOf(`.${className}`, offset);
+        if (offset === -1) {
+            break;
+        }
+        /**
+         * range {
+         *   line: 1-based
+         *   column: 1-based
+         * }
+         */
+        const range = cssLocation.toPosition(offset); // offset: 0-based
+        /**
+         * sourceRange {
+         *   line: 1-based
+         *   column: 0-based
+         * }
+         */
+        const sourceRange = sourceMapConsumer.originalPositionFor({
+            line: range.line, // line: 1-based
+            column: range.column - 1, // column: 0-based
+        });
+        if (sourceRange.line != null) {
+            positions.push({
+                line: sourceRange.line - 1, // 0-based
+                column: sourceRange.column, // 0-based
+                source: sourceRange.source,
+            })
+        }
+
+        offset += 1;
+    }
+
+    return positions;
+}
+
+async function addPositoinForLocals(localKeys, css, sourceMap) {
+    const locals = {};
+    let consumer = null;
+    let location = {};
+    if (sourceMap != null) {
+        location = vfileLocation(vfile(css));
+        consumer = await new SourceMapConsumer(sourceMap);
+    }
+    Object.keys(localKeys).map(key => {
+        if (sourceMap != null) {
+            const positions = getOriginalPositions(consumer, localKeys[key], css, location);
+            locals[key] = {
+                name: localKeys[key],
+                positions,
+            }
+        } else {
+            locals[key] = {
+                name: localKeys[key],
+            }
+        }
+    })
+    return locals;
+}
 
 export default async function processLess(source, rootPath, filePath, camelCase) {
     try {
@@ -17,17 +82,13 @@ export default async function processLess(source, rootPath, filePath, camelCase)
             filename: filePath,
         });
 
-        // console.log(lessResult)
-        // console.log(JSON.parse(lessResult.map))
         const sourceMap = lessResult.map;
         const css = lessResult.css;
-        // const consumer = await new SourceMapConsumer(sourceMap);
-        // consumer.eachMapping(function (m) { console.log(m); })
 
-        const locals = await getLocals(css, camelCase);
+        const localKeys = await getLocals(css, camelCase);
+        const locals = await addPositoinForLocals(localKeys, css, sourceMap);
         return {
             locals,
-            sourceMap,
             css,
             source,
         }

@@ -4,7 +4,7 @@ import * as fs from "fs";
 import getWordBeforeDot from './util/getWordBeforeDot';
 import findImportObjects from './util/findImportObjects';
 import processLess from './less/processLess';
-import { StyleObject } from './typings';
+import { StyleObject, Local } from './typings';
 import Cache from './cache';
 
 export default class CSSModuleHoverProvider implements vscode.HoverProvider {
@@ -21,7 +21,6 @@ export default class CSSModuleHoverProvider implements vscode.HoverProvider {
             // just a word
         } else {
             // find xxx.abc
-
             const moduleSpecifier = findImportObjects(document.getText(), identifier);
 
             if (moduleSpecifier == null) {
@@ -33,17 +32,16 @@ export default class CSSModuleHoverProvider implements vscode.HoverProvider {
 
             if (style != null) {
                 const locals = style.locals;
-                let isFind = false;
+                let matchLocal: Local = null;
                 Object.keys(locals).map(key => {
                     if (key === wordToDefinition) {
-                        isFind = true;
+                        matchLocal = locals[key];
                     }
                 })
-                if (isFind) {
-                    return new vscode.Hover(style.source);
+                if (matchLocal != null) {
+                    return new vscode.Hover(matchLocal.name);
                 }
             }
-            return null;
         }
 
     }
