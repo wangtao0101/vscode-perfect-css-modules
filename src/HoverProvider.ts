@@ -2,8 +2,10 @@ import * as vscode from "vscode";
 import * as path from "path";
 import * as fs from "fs";
 import getWordBeforeDot from './util/getWordBeforeDot';
-import findImportObjects from "./findImportObjects";
-import processLess from "./less/processLess";
+import findImportObjects from './util/findImportObjects';
+import processLess from './less/processLess';
+import { StyleObject } from './typings';
+import Cache from './cache';
 
 export default class CSSModuleHoverProvider implements vscode.HoverProvider {
     public async provideHover(document: vscode.TextDocument, position: vscode.Position,
@@ -27,10 +29,10 @@ export default class CSSModuleHoverProvider implements vscode.HoverProvider {
             }
 
             const uri = path.join(path.dirname(document.fileName), moduleSpecifier);
-            if (fs.existsSync(uri)) {
-                const source = fs.readFileSync(uri, 'utf-8');
-                const rootPath = vscode.workspace.getWorkspaceFolder(vscode.Uri.file(document.fileName)).uri.fsPath;
-                const locals = await processLess(source, rootPath, document.fileName);
+            const style: StyleObject = Cache.getStyleObject(vscode.Uri.file(uri));
+
+            if (style != null) {
+                const locals = style.locals;
                 let isFind = false;
                 Object.keys(locals).map(key => {
                     if (key === wordToDefinition) {
@@ -38,7 +40,7 @@ export default class CSSModuleHoverProvider implements vscode.HoverProvider {
                     }
                 })
                 if (isFind) {
-                    return new vscode.Hover(source);
+                    return new vscode.Hover(style.source);
                 }
             }
             return null;

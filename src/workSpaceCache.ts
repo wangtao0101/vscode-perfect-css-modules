@@ -10,13 +10,36 @@ export default class WorkSpaceCache {
     private fileWatcher: Array<FileSystemWatcher> = [];
     private workspaceFolder: WorkspaceFolder;
     private cache = {};
+    private camelCase;
 
     constructor(workspaceFolder: WorkspaceFolder) {
         this.workspaceFolder = workspaceFolder;
-        this.processALLStyleFile();
+        this.camelCase = vscode.workspace.getConfiguration('perfect-css-modules', this.workspaceFolder.uri).get<string>('camelCase');
+
+        this.processAllStyleFile();
+        this.addFileWatcher();
     }
 
-    async processALLStyleFile() {
+    private addFileWatcher() {
+        // TODO: filter file not in src
+        const watcher = vscode.workspace.createFileSystemWatcher(new RelativePattern(this.workspaceFolder, '**/*.{less}'));
+        watcher.onDidChange((file: vscode.Uri) => {
+            this.processStyleFile(file);
+        })
+        watcher.onDidCreate((file: vscode.Uri) => {
+            this.processStyleFile(file);
+        })
+        watcher.onDidDelete((file: vscode.Uri) => {
+            delete this.cache[file.fsPath];
+        })
+        this.fileWatcher.push(watcher);
+    }
+
+    getStyleObject(fsPath: string) {
+        return this.cache[fsPath];
+    }
+
+    async processAllStyleFile() {
         // TODO: filter file not in src
         const relativePattern = new RelativePattern(this.workspaceFolder, '**/*.{less}');
         const files = await vscode.workspace.findFiles(relativePattern, '{**/node_modules/**}', 99999);
@@ -31,7 +54,7 @@ export default class WorkSpaceCache {
                 return console.log(err);
             }
             if (file.fsPath.match(isLess)) {
-                processLess(data, this.workspaceFolder.uri.fsPath, file.fsPath)
+                processLess(data, this.workspaceFolder.uri.fsPath, file.fsPath, this.camelCase)
                 .then(result => {
                     this.cache[file.fsPath] = result;
                 })

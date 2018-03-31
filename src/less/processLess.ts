@@ -3,8 +3,9 @@ import { SourceMapConsumer } from 'source-map';
 import * as path from 'path';
 import getLocals from '../getLocals';
 import LessImportPlugin from './lessImportPlugin';
+import { StyleObject } from '../typings';
 
-export default async function processLess(source, rootPath, filePath) {
+export default async function processLess(source, rootPath, filePath, camelCase) {
     try {
         const lessResult = await less.render(source, {
             sourceMap: {
@@ -23,8 +24,13 @@ export default async function processLess(source, rootPath, filePath) {
         // const consumer = await new SourceMapConsumer(sourceMap);
         // consumer.eachMapping(function (m) { console.log(m); })
 
-        const locals = await getLocals(css);
-        return locals;
+        const locals = await getLocals(css, camelCase);
+        return {
+            locals,
+            sourceMap,
+            css,
+            source,
+        }
 
     } catch (err) {
         console.log(err);

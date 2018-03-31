@@ -1,9 +1,11 @@
 import * as vscode from 'vscode';
-import findImportObjects from './findImportObjects';
+import findImportObjects from './util/findImportObjects';
 import * as path from 'path';
 import * as fs from 'fs';
 import processLess from './less/processLess';
 import getWordBeforeDot from './util/getWordBeforeDot';
+import Cache from './cache';
+import { StyleObject } from './typings';
 
 
 export default class CompletionProvider implements vscode.CompletionItemProvider {
@@ -32,10 +34,10 @@ export default class CompletionProvider implements vscode.CompletionItemProvider
         }
 
         const uri = path.join(path.dirname(document.fileName), moduleSpecifier);
-        if (fs.existsSync(uri)) {
-            const source = fs.readFileSync(uri, 'utf-8');
-            const rootPath = vscode.workspace.getWorkspaceFolder(vscode.Uri.file(document.fileName)).uri.fsPath;
-            const locals = await processLess(source, rootPath, document.fileName);
+        const style: StyleObject = Cache.getStyleObject(vscode.Uri.file(uri));
+
+        if (style != null) {
+            const locals = style.locals;
             const handlers = [];
             Object.keys(locals).map(key => {
                 handlers.push({

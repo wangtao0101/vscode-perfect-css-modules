@@ -4,6 +4,10 @@
     "description": "",
     "version": "0.0.1",
     "publisher": "wangtao0101",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/wangtao0101/vscode-perfect-css-modules.git"
+    },
     "engines": {
         "vscode": "^1.21.0"
     },
@@ -15,12 +19,18 @@
     ],
     "main": "./out/src/extension",
     "contributes": {
-        "commands": [
-            {
-                "command": "extension.sayHello",
-                "title": "Hello World"
+        "configuration": {
+            "type": "object",
+            "title": "js import configuration",
+            "properties": {
+                "perfect-css-modules.camelCase": {
+                    "type": "string",
+                    "default": "camelOnly",
+                    "description": "Export Classnames in camelOnly or dashesOnly",
+                    "scope": "resource"
+                }
             }
-        ]
+        }
     },
     "scripts": {
         "vscode:prepublish": "npm run compile",
