@@ -23,6 +23,12 @@
             "type": "object",
             "title": "js import configuration",
             "properties": {
+                "perfect-css-modules.rootDir": {
+                    "type": "string",
+                    "default": ".",
+                    "description": "Specifies the root directory of input files relative to project workspace, including js, ts, css, less. Defaults to ., you can set /src",
+                    "scope": "resource"
+                },
                 "perfect-css-modules.camelCase": {
                     "type": "string",
                     "default": "camelOnly",

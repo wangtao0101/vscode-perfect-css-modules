@@ -1,6 +1,7 @@
 import { WorkspaceFolder, RelativePattern, FileSystemWatcher } from 'vscode';
 import * as vscode from 'vscode';
 import * as fs from 'fs';
+import * as path from 'path';
 import processLess from '../less/processLess';
 import processCss from '../css/processCss';
 
@@ -13,9 +14,11 @@ export default class WorkSpaceCache {
     private cache = {};
     private camelCase;
     private filesToScan;
+    private rootDir;
 
     constructor(workspaceFolder: WorkspaceFolder) {
         this.workspaceFolder = workspaceFolder;
+        this.rootDir = vscode.workspace.getConfiguration('perfect-css-modules', this.workspaceFolder.uri).get<string>('rootDir');
         this.camelCase = vscode.workspace.getConfiguration('perfect-css-modules', this.workspaceFolder.uri).get<string>('camelCase');
         this.filesToScan = vscode.workspace.getConfiguration('perfect-css-modules', this.workspaceFolder.uri).get<string>('filesToScan');
 
@@ -24,7 +27,8 @@ export default class WorkSpaceCache {
     }
 
     private addFileWatcher() {
-        const watcher = vscode.workspace.createFileSystemWatcher(new RelativePattern(this.workspaceFolder, this.filesToScan));
+        const relativePattern = new RelativePattern(path.join(this.workspaceFolder.uri.fsPath, this.rootDir), this.filesToScan);
+        const watcher = vscode.workspace.createFileSystemWatcher(relativePattern);
         watcher.onDidChange((file: vscode.Uri) => {
             this.processStyleFile(file);
         })
@@ -38,7 +42,7 @@ export default class WorkSpaceCache {
     }
 
     private async processAllStyleFile() {
-        const relativePattern = new RelativePattern(this.workspaceFolder, this.filesToScan);
+        const relativePattern = new RelativePattern(path.join(this.workspaceFolder.uri.fsPath, this.rootDir), this.filesToScan);
         const files = await vscode.workspace.findFiles(relativePattern, '{**/node_modules/**}', 99999);
         files.forEach(file => {
             this.processStyleFile(file);

@@ -1,3 +1,4 @@
 {
     "perfect-css-modules.filesToScan": "**/*.{less,css}",
+    "perfect-css-modules.rootDir": "/src",
 }
