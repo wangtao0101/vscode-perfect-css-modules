@@ -2,10 +2,14 @@ import { WorkspaceFolder, RelativePattern, FileSystemWatcher } from 'vscode';
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as pify from 'pify';
 import processLess from '../less/processLess';
 import processCss from '../css/processCss';
 import { StyleImport } from '../typings';
 import { findAllStyleImports } from '../util/findImportObject';
+import { compile } from '../parse/typescript';
+
+const readFile = pify(fs.readFile.bind(fs));
 
 const isLess = /\.less$/;
 const isCss = /\.css$/;
@@ -51,6 +55,8 @@ export default class WorkSpaceCache {
         const relativePatternJs = new RelativePattern(path.join(this.workspaceFolder.uri.fsPath, this.rootDir), this.jsFilesToScan);
         const jsWatcher = vscode.workspace.createFileSystemWatcher(relativePatternJs);
         jsWatcher.onDidChange((file: vscode.Uri) => {
+            const data = fs.readFileSync(file.fsPath);
+            // compile(data.toString(), file.fsPath, []);
             this.processJsFile(file);
         })
         jsWatcher.onDidCreate((file: vscode.Uri) => {
@@ -66,28 +72,25 @@ export default class WorkSpaceCache {
     private async processAllStyleFiles() {
         const relativePattern = new RelativePattern(path.join(this.workspaceFolder.uri.fsPath, this.rootDir), this.styleFilesToScan);
         const files = await vscode.workspace.findFiles(relativePattern, '{**/node_modules/**}', 99999);
-        files.forEach(file => {
-            this.processStyleFile(file);
-        });
+        for (const file of files) {
+            await this.processStyleFile(file);
+        }
+        console.log(Object.keys(this.styleCache));
     }
 
-    private processStyleFile(file: vscode.Uri) {
-        fs.readFile(file.fsPath, 'utf8', (err, data) => {
-            if (err) {
-                return console.log(err);
-            }
+    private async processStyleFile(file: vscode.Uri) {
+        try {
+            const data = await readFile(file.fsPath, 'utf8')
             if (file.fsPath.match(isLess)) {
-                processLess(data, this.workspaceFolder.uri.fsPath, file.fsPath, this.camelCase)
-                .then(result => {
-                    this.styleCache[file.fsPath] = result;
-                })
+                const result = await processLess(data, this.workspaceFolder.uri.fsPath, file.fsPath, this.camelCase);
+                this.styleCache[file.fsPath] = result;
             } else if (file.fsPath.match(isCss)) {
-                processCss(data, file.fsPath, this.camelCase)
-                .then(result => {
-                    this.styleCache[file.fsPath] = result;
-                })
+                const result = await processCss(data, file.fsPath, this.camelCase)
+                this.styleCache[file.fsPath] = result;
             }
-        })
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     private async processAllJsFiles() {

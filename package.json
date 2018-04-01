@@ -38,7 +38,7 @@
                 "perfect-css-modules.styleFilesToScan": {
                     "type": "string",
                     "default": "**/*.{less,css}",
-                    "description": "Glob for files to watch and scan. Defaults to **/*.{less,css}." ,
+                    "description": "Glob for files to watch and scan. Defaults to **/*.{less,css}.",
                     "scope": "resource"
                 },
                 "perfect-css-modules.jsFilesToScan": {
@@ -67,6 +67,7 @@
         "css-loader": "^0.28.11",
         "less": "^3.0.1",
         "parse-import-es6": "^0.5.9",
+        "pify": "^3.0.0",
         "vfile": "^2.3.0",
         "vfile-location": "^2.0.2"
     }
