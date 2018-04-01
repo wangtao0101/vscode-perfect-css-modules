@@ -5,17 +5,17 @@ import { StyleObject } from '../typings';
 export default class Cache {
     private static styleCache = {};
 
-    public static buildCache () {
+    public static buildCache (diagnosticCollection) {
         if (vscode.workspace.workspaceFolders) {
             vscode.workspace.workspaceFolders.map(item => {
-                Cache.styleCache[item.uri.fsPath] = new WorkSpaceCache(item)
+                Cache.styleCache[item.uri.fsPath] = new WorkSpaceCache(item, diagnosticCollection)
             })
         }
     }
 
-    public static buildWorkSpaceCache(item: vscode.WorkspaceFolder) {
+    public static buildWorkSpaceCache(item: vscode.WorkspaceFolder, diagnosticCollection) {
         Cache.deleteWorkSpaceCache(item);
-        Cache.styleCache[item.uri.fsPath] = new WorkSpaceCache(item);
+        Cache.styleCache[item.uri.fsPath] = new WorkSpaceCache(item, diagnosticCollection);
     }
 
     public static deleteWorkSpaceCache(item: vscode.WorkspaceFolder) {

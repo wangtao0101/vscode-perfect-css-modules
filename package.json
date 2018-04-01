@@ -35,10 +35,16 @@
                     "description": "Export Classnames in camelOnly or dashesOnly",
                     "scope": "resource"
                 },
-                "perfect-css-modules.filesToScan": {
+                "perfect-css-modules.styleFilesToScan": {
                     "type": "string",
                     "default": "**/*.{less,css}",
-                    "description": "Glob for files to watch and scan. Defaults to **/*.{less,css}",
+                    "description": "Glob for files to watch and scan. Defaults to **/*.{less,css}." ,
+                    "scope": "resource"
+                },
+                "perfect-css-modules.jsFilesToScan": {
+                    "type": "string",
+                    "default": "**/*.{js,ts,jsx,tsx}",
+                    "description": "Glob for files to watch and scan. Defaults to **/*.{js,ts,jsx,tsx}",
                     "scope": "resource"
                 }
             }

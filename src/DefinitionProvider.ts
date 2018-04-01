@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import * as path from "path";
 import * as fs from "fs";
 import getWordBeforeDot from './util/getWordBeforeDot';
-import findImportObjects from './util/findImportObjects';
+import { findMatchModuleSpecifier } from './util/findImportObject';
 import processLess from "./less/processLess";
 import Cache from './cache/cache';
 import { StyleObject, Local } from './typings';
@@ -22,7 +22,7 @@ export default class CSSModuleDefinitionProvider implements vscode.DefinitionPro
         } else {
             // find xxx.abc
 
-            const moduleSpecifier = findImportObjects(document.getText(), identifier);
+            const moduleSpecifier = findMatchModuleSpecifier(document.getText(), identifier);
 
             if (moduleSpecifier == null) {
                 return [];
@@ -52,7 +52,7 @@ export default class CSSModuleDefinitionProvider implements vscode.DefinitionPro
                         matchLocal.positions.map(po => {
                             start = new vscode.Position(po.line, po.column);
                             end = new vscode.Position(po.line, po.column + matchLocal.name.length);
-                            position.push(new vscode.Location(vscode.Uri.file(po.source), new vscode.Range(start, end)))
+                            position.push(new vscode.Location(vscode.Uri.file(po.fsPath), new vscode.Range(start, end)))
                         })
                     }
                     return position;

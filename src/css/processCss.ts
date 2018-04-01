@@ -1,10 +1,11 @@
 import getLocals from "../util/getLocals";
+import { Position } from "../typings";
 
 const vfile = require('vfile');
 const vfileLocation = require('vfile-location');
 
-function getOriginalPositions(className, css: string = '', cssLocation, filePath) {
-    const positions = [];
+function getOriginalPositions(className, css: string = '', cssLocation, filePath): Array<Position> {
+    const positions: Array<Position> = [];
     let offset = 0;
     while (true) {
         offset = css.indexOf(`.${className}`, offset);
@@ -21,7 +22,7 @@ function getOriginalPositions(className, css: string = '', cssLocation, filePath
         positions.push({
             line: range.line - 1, // 0-based
             column: range.column - 1, // 0-based
-            source: filePath,
+            fsPath: filePath,
         })
 
         offset += 1;

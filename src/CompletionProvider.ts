@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import findImportObjects from './util/findImportObjects';
+import { findMatchModuleSpecifier } from './util/findImportObject';
 import * as path from 'path';
 import * as fs from 'fs';
 import { SourceMapConsumer } from 'source-map';
@@ -27,7 +27,7 @@ export default class CompletionProvider implements vscode.CompletionItemProvider
             return [];
         }
 
-        const moduleSpecifier = findImportObjects(document.getText(), identifier);
+        const moduleSpecifier = findMatchModuleSpecifier(document.getText(), identifier);
 
         if (moduleSpecifier == null) {
             return [];

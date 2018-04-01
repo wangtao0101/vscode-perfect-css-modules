@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import * as path from "path";
 import * as fs from "fs";
 import getWordBeforeDot from './util/getWordBeforeDot';
-import findImportObjects from './util/findImportObjects';
+import { findMatchModuleSpecifier } from './util/findImportObject';
 import processLess from './less/processLess';
 import { StyleObject, Local } from './typings';
 import Cache from './cache/cache';
@@ -21,7 +21,7 @@ export default class CSSModuleHoverProvider implements vscode.HoverProvider {
             // just a word
         } else {
             // find xxx.abc
-            const moduleSpecifier = findImportObjects(document.getText(), identifier);
+            const moduleSpecifier = findMatchModuleSpecifier(document.getText(), identifier);
 
             if (moduleSpecifier == null) {
                 return null;

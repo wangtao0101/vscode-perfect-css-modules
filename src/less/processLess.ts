@@ -3,12 +3,12 @@ import { SourceMapConsumer } from 'source-map';
 import * as path from 'path';
 import getLocals from '../util/getLocals';
 import LessImportPlugin from './lessImportPlugin';
-import { StyleObject } from '../typings';
+import { StyleObject, Position } from '../typings';
 const vfile = require('vfile');
 const vfileLocation = require('vfile-location');
 
-function getOriginalPositions(sourceMapConsumer, className, css: string = '', cssLocation) {
-    const positions = [];
+function getOriginalPositions(sourceMapConsumer, className, css: string = '', cssLocation): Array<Position> {
+    const positions: Array<Position> = [];
     let offset = 0;
     while (true) {
         offset = css.indexOf(`.${className}`, offset);
@@ -36,7 +36,7 @@ function getOriginalPositions(sourceMapConsumer, className, css: string = '', cs
             positions.push({
                 line: sourceRange.line - 1, // 0-based
                 column: sourceRange.column, // 0-based
-                source: sourceRange.source,
+                fsPath: sourceRange.source,
             })
         }
 

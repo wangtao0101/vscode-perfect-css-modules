@@ -15,21 +15,22 @@ export function activate(context: vscode.ExtensionContext) {
     ];
 
     const completetion = vscode.languages.registerCompletionItemProvider(mode, new CompletionProvider(), '.');
-    const definition = vscode.languages.registerDefinitionProvider(mode, new CSSModuleDefinitionProvider())
-    const hover = vscode.languages.registerHoverProvider(mode, new CSSModuleHoverProvider())
+    const definition = vscode.languages.registerDefinitionProvider(mode, new CSSModuleDefinitionProvider());
+    const hover = vscode.languages.registerHoverProvider(mode, new CSSModuleHoverProvider());
+    const diagnosticCollection = vscode.languages.createDiagnosticCollection('perfect-css-modules');
 
-    Cache.buildCache();
+    Cache.buildCache(diagnosticCollection);
 
     const wfWatcher = vscode.workspace.onDidChangeWorkspaceFolders((event) => {
         event.added.map(item => {
-            Cache.buildWorkSpaceCache(item)
+            Cache.buildWorkSpaceCache(item, diagnosticCollection)
         })
         event.removed.map(item => {
             Cache.deleteWorkSpaceCache(item)
         });
     })
 
-    context.subscriptions.push(wfWatcher, completetion, definition, hover);
+    context.subscriptions.push(diagnosticCollection, wfWatcher, completetion, definition, hover);
 }
 
 export function deactivate() {
