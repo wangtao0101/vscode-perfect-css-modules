@@ -20,3 +20,11 @@ export interface StyleImport {
     jsFsPath: string;
     styleFsPath: string;
 }
+
+export interface PropertyAccessExpression {
+    left: string;
+    right: string;
+    pos: number;
+    end: number;
+    styleImport: StyleImport;
+}

@@ -5,9 +5,12 @@ import * as path from 'path';
 import * as pify from 'pify';
 import processLess from '../less/processLess';
 import processCss from '../css/processCss';
-import { StyleImport } from '../typings';
+import { StyleImport, StyleObject } from '../typings';
 import { findAllStyleImports } from '../util/findImportObject';
 import { compile } from '../parse/typescript';
+
+const vfile = require('vfile');
+const vfileLocation = require('vfile-location');
 
 const readFile = pify(fs.readFile.bind(fs));
 
@@ -34,7 +37,11 @@ export default class WorkSpaceCache {
         this.styleFilesToScan = vscode.workspace.getConfiguration('perfect-css-modules', this.workspaceFolder.uri).get<string>('styleFilesToScan');
         this.jsFilesToScan = vscode.workspace.getConfiguration('perfect-css-modules', this.workspaceFolder.uri).get<string>('jsFilesToScan');
 
-        this.processAllStyleFiles();
+        this.init();
+    }
+
+    private async init() {
+        await this.processAllStyleFiles();
         this.processAllJsFiles();
         this.addFileWatcher();
     }
@@ -56,7 +63,6 @@ export default class WorkSpaceCache {
         const jsWatcher = vscode.workspace.createFileSystemWatcher(relativePatternJs);
         jsWatcher.onDidChange((file: vscode.Uri) => {
             const data = fs.readFileSync(file.fsPath);
-            // compile(data.toString(), file.fsPath, []);
             this.processJsFile(file);
         })
         jsWatcher.onDidCreate((file: vscode.Uri) => {
@@ -106,11 +112,35 @@ export default class WorkSpaceCache {
             if (err) {
                 return console.log(err);
             }
-            this.styleImportsCache[file.fsPath] = findAllStyleImports(data, file.fsPath);
+            const styleImports = findAllStyleImports(data, file.fsPath);
+            this.styleImportsCache[file.fsPath] = styleImports;
+            if (styleImports.length !== 0) {
+                const diags: Array<vscode.Diagnostic> = [];
+                const paes = compile(data, file.fsPath, styleImports);
+                const location = vfileLocation(vfile(data));
+                paes.map(pae => {
+                    const styleObject = this.getStyleObject(pae.styleImport.styleFsPath)
+                    if (styleObject != null && styleObject.locals[pae.right] == null) {
+                        /**
+                         * range {
+                         *   line: 1-based
+                         *   column: 1-based
+                         * }
+                         */
+                        const rangeStart = location.toPosition(pae.pos); // offset: 0-based
+                        const rangeEnd = location.toPosition(pae.end); // offset: 0-based
+                        const vsRange = new vscode.Range(rangeStart.line - 1, rangeStart.column - 1, rangeEnd.line - 1, rangeEnd.column - 1);
+                        diags.push(new vscode.Diagnostic(vsRange, `Cannot find ${pae.right} in ${pae.left}.`, vscode.DiagnosticSeverity.Error));
+                    }
+                })
+                if (diags.length !== 0) {
+                    this.diagnosticCollection.set(vscode.Uri.file(file.fsPath), diags);
+                }
+            }
         })
     }
 
-    public getStyleObject(fsPath: string) {
+    public getStyleObject(fsPath: string): StyleObject {
         return this.styleCache[fsPath];
     }
 
