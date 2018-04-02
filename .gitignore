@@ -1,6 +1,6 @@
 out
 node_modules
 .vscode-test/
-.vsix
+*.vsix
 npm-debug.log
 !test/workspace/node_modules
