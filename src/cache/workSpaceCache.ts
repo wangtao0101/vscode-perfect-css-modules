@@ -21,7 +21,7 @@ export default class WorkSpaceCache {
     private fileWatcher: Array<FileSystemWatcher> = [];
     private workspaceFolder: WorkspaceFolder;
     private styleCache = {};
-    private styleImportsCache = {};
+    private styleImportsCache: Map<string, StyleImport[]> = new Map();
     private camelCase;
     private styleFilesToScan;
     private jsFilesToScan;
@@ -51,9 +51,11 @@ export default class WorkSpaceCache {
         const styleWatcher = vscode.workspace.createFileSystemWatcher(relativePattern);
         styleWatcher.onDidChange((file: vscode.Uri) => {
             this.processStyleFile(file);
+            this.regenerateDiagnostic(file.fsPath);
         })
         styleWatcher.onDidCreate((file: vscode.Uri) => {
             this.processStyleFile(file);
+            this.regenerateDiagnostic(file.fsPath);
         })
         styleWatcher.onDidDelete((file: vscode.Uri) => {
             delete this.styleCache[file.fsPath];
@@ -82,6 +84,25 @@ export default class WorkSpaceCache {
         for (const file of files) {
             await this.processStyleFile(file);
         }
+    }
+
+    /**
+     * regenerate Diagnostic after change style file
+     * @param styleFilePath
+     */
+    private regenerateDiagnostic(styleFilePath: string) {
+        const relatedJsFilePaths = [];
+        Object.keys(this.styleImportsCache).map(jsPath => {
+            const sis:StyleImport[] = this.styleImportsCache[jsPath];
+            sis.map(si => {
+                if (si.styleFsPath === styleFilePath) {
+                    relatedJsFilePaths.push(si.jsFsPath);
+                }
+            })
+        })
+        relatedJsFilePaths.map(jsPath => {
+            this.processJsFile(vscode.Uri.file(jsPath));
+        })
     }
 
     private async processStyleFile(file: vscode.Uri) {
