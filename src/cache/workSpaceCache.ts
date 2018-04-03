@@ -70,6 +70,7 @@ export default class WorkSpaceCache {
         })
         jsWatcher.onDidDelete((file: vscode.Uri) => {
             delete this.styleImportsCache[file.fsPath];
+            this.diagnosticCollection.delete(file);
         })
         this.fileWatcher.push(styleWatcher);
         this.fileWatcher.push(jsWatcher);
@@ -81,7 +82,6 @@ export default class WorkSpaceCache {
         for (const file of files) {
             await this.processStyleFile(file);
         }
-        console.log(Object.keys(this.styleCache));
     }
 
     private async processStyleFile(file: vscode.Uri) {
@@ -114,6 +114,8 @@ export default class WorkSpaceCache {
             }
             const styleImports = findAllStyleImports(data, file.fsPath);
             this.styleImportsCache[file.fsPath] = styleImports;
+
+            this.diagnosticCollection.delete(file);
             if (styleImports.length !== 0) {
                 const diags: Array<vscode.Diagnostic> = [];
                 const paes = compile(data, file.fsPath, styleImports);
@@ -130,11 +132,11 @@ export default class WorkSpaceCache {
                         const rangeStart = location.toPosition(pae.pos); // offset: 0-based
                         const rangeEnd = location.toPosition(pae.end); // offset: 0-based
                         const vsRange = new vscode.Range(rangeStart.line - 1, rangeStart.column - 1, rangeEnd.line - 1, rangeEnd.column - 1);
-                        diags.push(new vscode.Diagnostic(vsRange, `Cannot find ${pae.right} in ${pae.left}.`, vscode.DiagnosticSeverity.Error));
+                        diags.push(new vscode.Diagnostic(vsRange, `perfect-css-module: Cannot find ${pae.right} in ${pae.left}.`, vscode.DiagnosticSeverity.Error));
                     }
                 })
                 if (diags.length !== 0) {
-                    this.diagnosticCollection.set(vscode.Uri.file(file.fsPath), diags);
+                    this.diagnosticCollection.set(file, diags);
                 }
             }
         })

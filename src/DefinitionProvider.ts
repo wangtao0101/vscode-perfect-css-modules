@@ -50,6 +50,7 @@ export default class CSSModuleDefinitionProvider implements vscode.DefinitionPro
                         position.push(new vscode.Location(vscode.Uri.file(uri), new vscode.Range(start, end)))
                     } else {
                         matchLocal.positions.map(po => {
+                            // TODO: check the word in file for $ if less file
                             start = new vscode.Position(po.line, po.column);
                             end = new vscode.Position(po.line, po.column + matchLocal.name.length);
                             position.push(new vscode.Location(vscode.Uri.file(po.fsPath), new vscode.Range(start, end)))

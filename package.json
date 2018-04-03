@@ -2,7 +2,7 @@
     "name": "vscode-perfect-css-modules",
     "displayName": "perfect-css-modules",
     "description": "",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "publisher": "wangtao0101",
     "repository": {
         "type": "git",
@@ -60,7 +60,6 @@
     "devDependencies": {
         "@types/mocha": "^2.2.42",
         "@types/node": "^9.4.7",
-        "typescript": "^2.6.1",
         "vscode": "^1.1.13"
     },
     "dependencies": {
@@ -68,6 +67,7 @@
         "less": "^3.0.1",
         "parse-import-es6": "^0.5.9",
         "pify": "^3.0.0",
+        "typescript": "^2.8.1",
         "vfile": "^2.3.0",
         "vfile-location": "^2.0.2"
     }

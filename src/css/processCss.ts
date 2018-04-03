@@ -8,6 +8,7 @@ function getOriginalPositions(className, css: string = '', cssLocation, filePath
     const positions: Array<Position> = [];
     let offset = 0;
     while (true) {
+        // TODO: find exact match word, do not use index of
         offset = css.indexOf(`.${className}`, offset);
         if (offset === -1) {
             break;
