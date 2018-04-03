@@ -1,6 +1,7 @@
 import * as ts from "typescript";
+import { StyleImport, PropertyAccessExpression } from "../typings";
 
-export function compile(code: string, filepath: string, identifers: string[]) {
+export function compile(code: string, filepath: string, styleImports: Array<StyleImport>) : Array<PropertyAccessExpression>{
     const result = [];
     let sourceFile;
     try {
@@ -23,12 +24,14 @@ export function compile(code: string, filepath: string, identifers: string[]) {
                 case ts.SyntaxKind.PropertyAccessExpression:
                     const left = (node as ts.PropertyAccessExpression).expression.getText();
                     const name = (node as ts.PropertyAccessExpression).name;
-                    if (identifers.indexOf(left) !== -1) {
+                    const matchStyleImport = styleImports.find(si => si.identifier === left)
+                    if (matchStyleImport != null) {
                         result.push({
                             left,
                             right: name.getText(),
                             pos: name.pos,
-                            end: name.end - 1,
+                            end: name.end,
+                            styleImport: matchStyleImport
                         })
                     }
                     break;
@@ -39,4 +42,6 @@ export function compile(code: string, filepath: string, identifers: string[]) {
     }
 
     doParse(sourceFile);
+
+    return result;
 }
