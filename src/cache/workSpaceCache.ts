@@ -7,7 +7,7 @@ import processLess from '../less/processLess';
 import processCss from '../css/processCss';
 import { StyleImport, StyleObject } from '../typings';
 import { findAllStyleImports } from '../util/findImportObject';
-import { compile } from '../parse/typescript';
+import { compile } from '../parse';
 
 const vfile = require('vfile');
 const vfileLocation = require('vfile-location');

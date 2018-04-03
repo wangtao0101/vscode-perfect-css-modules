@@ -9,8 +9,8 @@ export function activate(context: vscode.ExtensionContext) {
 
     const mode: vscode.DocumentFilter[] = [
         { language: "javascript", scheme: "file" },
+        { language: "javascriptreact", scheme: "file" },
         { language: "typescript", scheme: "file" },
-        { language: "typescriptreact", scheme: "file" },
         { language: "typescriptreact", scheme: "file" },
     ];
 

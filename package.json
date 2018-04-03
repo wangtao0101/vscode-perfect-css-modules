@@ -15,7 +15,13 @@
         "Other"
     ],
     "activationEvents": [
-        "*"
+        "onLanguage:javascript",
+        "onLanguage:javascriptreact",
+        "onLanguage:typescript",
+        "onLanguage:typescriptreact",
+        "onLanguage:css",
+        "onLanguage:less",
+        "onLanguage:scss"
     ],
     "main": "./out/src/extension",
     "contributes": {
@@ -63,6 +69,8 @@
         "vscode": "^1.1.13"
     },
     "dependencies": {
+        "@babel/traverse": "^7.0.0-beta.44",
+        "@babel/types": "^7.0.0-beta.44",
         "css-loader": "^0.28.11",
         "less": "^3.0.1",
         "parse-import-es6": "^0.5.9",
