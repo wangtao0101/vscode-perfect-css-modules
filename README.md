@@ -6,7 +6,18 @@ An vscode extension for css-modules language server.
 * autocomplete
 * go to definition
 * hover tooltip
-* provide diagnostic error
+* provide diagnostic
+
+# Snapshot
+## autocomplete
+![GitHub Logo](https://github.com/wangtao0101/vscode-perfect-css-modules/blob/master/img/codecomplete.gif?raw=true)
+
+## go to definition
+![GitHub Logo](https://github.com/wangtao0101/vscode-perfect-css-modules/blob/master/img/goto.gif?raw=true)
+
+## diagnostic
+![GitHub Logo](https://github.com/wangtao0101/vscode-perfect-css-modules/blob/master/img/dia.gif?raw=true)
+
 
 # Config
 ## perfect-css-modules.rootDir
