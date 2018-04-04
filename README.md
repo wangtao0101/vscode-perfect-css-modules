@@ -1,4 +1,5 @@
 # vscode-perfect-css-modules
+[![Marketplace Version](https://vsmarketplacebadge.apphb.com/version/wangtao0101.vscode-perfect-css-modules.svg)](https://marketplace.visualstudio.com/items?itemName=wangtao0101.vscode-perfect-css-modules)
 
 An vscode extension for css-modules language server.
 
