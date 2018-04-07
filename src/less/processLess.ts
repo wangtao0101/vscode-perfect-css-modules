@@ -71,14 +71,14 @@ async function addPositoinForLocals(localKeys, css, sourceMap) {
     return locals;
 }
 
-export default async function processLess(source, rootPath, filePath, camelCase) {
+export default async function processLess(source, rootPath, filePath, camelCase, modulePath) {
     try {
         const lessResult = await less.render(source, {
             sourceMap: {
                 outputSourceFiles: true
             },
             relativeUrls: true,
-            plugins: [LessImportPlugin()],
+            plugins: [LessImportPlugin(modulePath)],
             rootpath: rootPath,
             filename: filePath,
         });

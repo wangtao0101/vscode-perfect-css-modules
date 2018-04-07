@@ -4,7 +4,7 @@ import * as fs from 'fs';
 
 const isModuleName = /^~[^/\\]+$/;
 
-export default function LessImportPlugin() {
+export default function LessImportPlugin(modulePath: string) {
 
     class ImportFileManager extends less.FileManager {
         supports() {
@@ -26,7 +26,7 @@ export default function LessImportPlugin() {
 
             let name;
             if (isNpm) {
-                name = path.join(options.rootpath, 'node_modules' ,url.substr(1));
+                name = path.join(options.rootpath, modulePath, url.substr(1));
             } else {
                 name = path.join(currentDirectory, url);
             }

@@ -52,6 +52,12 @@
                     "default": "**/*.{js,ts,jsx,tsx}",
                     "description": "Glob for files to watch and scan. Defaults to **/*.{js,ts,jsx,tsx}",
                     "scope": "resource"
+                },
+                "perfect-css-modules.modulesPath": {
+                    "type": "string",
+                    "default": "./node_modules",
+                    "description": "Specifies the node_modules directory, see https://github.com/wangtao0101/vscode-perfect-css-modules#imports",
+                    "scope": "resource"
                 }
             }
         }

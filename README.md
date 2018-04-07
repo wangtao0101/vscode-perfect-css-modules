@@ -23,7 +23,7 @@ A vscode extension for css-modules language server.
 # Imports
 The behavior is the same as [less loader webpack resolver](https://github.com/webpack-contrib/less-loader#imports).
 
-You can import your Less modules from `node_modules`. Just prepend them with a `~` which tells extension to look up the [`modules`]
+You can import your Less modules from `node_modules`. Just prepend them with a `~` which tells extension to look up the [`modules`].
 
 ```less
 @import "~bootstrap/less/bootstrap";
@@ -31,7 +31,7 @@ You can import your Less modules from `node_modules`. Just prepend them with a `
 
 # Config
 ## perfect-css-modules.rootDir
-Specifies the root directory of input files relative to project workspace, including js, ts, css, less. Defaults to ., you can set /src
+Specifies the root directory of input files relative to project workspace, including js, ts, css, less. Defaults to ., you can set /src.
 
 ## perfect-css-modules.camelCase
 Export Classnames in camelOnly or dashesOnly.
@@ -41,6 +41,9 @@ Glob for files to watch and scan. Defaults to **/*.{less,css}.
 
 ## perfect-css-modules.jsFilesToScan
 Glob for files to watch and scan. Defaults to **/*.{js,ts,jsx,tsx}
+
+## perfect-css-modules.modulesPath
+Specifies the node_modules directory. Defaults to ./node_modulesSee. https://github.com/wangtao0101/vscode-perfect-css-modules#imports.
 
 
 # TODO

@@ -27,6 +27,7 @@ export default class WorkSpaceCache {
     private jsFilesToScan;
     private rootDir;
     private diagnosticCollection: vscode.DiagnosticCollection;
+    private modulePath;
 
     constructor(workspaceFolder: WorkspaceFolder, diagnosticCollection: vscode.DiagnosticCollection) {
         this.workspaceFolder = workspaceFolder;
@@ -36,6 +37,7 @@ export default class WorkSpaceCache {
         this.camelCase = vscode.workspace.getConfiguration('perfect-css-modules', this.workspaceFolder.uri).get<string>('camelCase');
         this.styleFilesToScan = vscode.workspace.getConfiguration('perfect-css-modules', this.workspaceFolder.uri).get<string>('styleFilesToScan');
         this.jsFilesToScan = vscode.workspace.getConfiguration('perfect-css-modules', this.workspaceFolder.uri).get<string>('jsFilesToScan');
+        this.modulePath = vscode.workspace.getConfiguration('perfect-css-modules', this.workspaceFolder.uri).get<string>('modulesPath');
 
         this.init();
     }
@@ -109,7 +111,7 @@ export default class WorkSpaceCache {
         try {
             const data = await readFile(file.fsPath, 'utf8')
             if (file.fsPath.match(isLess)) {
-                const result = await processLess(data, this.workspaceFolder.uri.fsPath, file.fsPath, this.camelCase);
+                const result = await processLess(data, this.workspaceFolder.uri.fsPath, file.fsPath, this.camelCase, this.modulePath);
                 this.styleCache[file.fsPath] = result;
             } else if (file.fsPath.match(isCss)) {
                 const result = await processCss(data, file.fsPath, this.camelCase)
