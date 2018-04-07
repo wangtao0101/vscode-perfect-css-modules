@@ -1,7 +1,8 @@
 # vscode-perfect-css-modules
 [![Marketplace Version](https://vsmarketplacebadge.apphb.com/version/wangtao0101.vscode-perfect-css-modules.svg)](https://marketplace.visualstudio.com/items?itemName=wangtao0101.vscode-perfect-css-modules)
+[![Installs](https://vsmarketplacebadge.apphb.com/installs/wangtao0101.vscode-perfect-css-modules.svg)](https://marketplace.visualstudio.com/items?itemName=wangtao0101.vscode-perfect-css-modules)
 
-An vscode extension for css-modules language server.
+A vscode extension for css-modules language server.
 
 # Feature
 * autocomplete
@@ -19,6 +20,14 @@ An vscode extension for css-modules language server.
 ## diagnostic
 ![GitHub Logo](https://github.com/wangtao0101/vscode-perfect-css-modules/blob/master/img/dia.gif?raw=true)
 
+# Imports
+The behavior is the same as [less loader webpack resolver](https://github.com/webpack-contrib/less-loader#imports).
+
+You can import your Less modules from `node_modules`. Just prepend them with a `~` which tells extension to look up the [`modules`]
+
+```less
+@import "~bootstrap/less/bootstrap";
+```
 
 # Config
 ## perfect-css-modules.rootDir
@@ -39,4 +48,4 @@ Glob for files to watch and scan. Defaults to **/*.{js,ts,jsx,tsx}
 - [x] support ts
 - [x] support less
 - [x] support css
-- [ ] support scss
+- [ ] support sass
