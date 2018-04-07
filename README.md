@@ -43,7 +43,7 @@ Glob for files to watch and scan. Defaults to **/*.{less,css}.
 Glob for files to watch and scan. Defaults to **/*.{js,ts,jsx,tsx}
 
 ## perfect-css-modules.modulesPath
-Specifies the node_modules directory. Defaults to ./node_modules. See: https://github.com/wangtao0101/vscode-perfect-css-modules#imports.
+Specifies the node_modules directory. Defaults to ./node_modules. See [Imports](https://github.com/wangtao0101/vscode-perfect-css-modules#imports).
 
 
 # TODO
