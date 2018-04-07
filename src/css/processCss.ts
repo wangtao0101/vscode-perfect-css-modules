@@ -13,6 +13,12 @@ function getOriginalPositions(className, css: string = '', cssLocation, filePath
         if (offset === -1) {
             break;
         }
+
+        const tmpchar = css[offset + className.length + 1];
+        if(/[a-zA-Z]/.test(tmpchar)) {
+            offset += 1;
+            continue;
+        }
         /**
          * range {
          *   line: 1-based

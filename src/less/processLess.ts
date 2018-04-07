@@ -7,7 +7,7 @@ import { StyleObject, Position } from '../typings';
 const vfile = require('vfile');
 const vfileLocation = require('vfile-location');
 
-function getOriginalPositions(sourceMapConsumer, className, css: string = '', cssLocation): Array<Position> {
+function getOriginalPositions(sourceMapConsumer, className: string, css: string = '', cssLocation): Array<Position> {
     const positions: Array<Position> = [];
     let offset = 0;
     while (true) {
@@ -15,6 +15,12 @@ function getOriginalPositions(sourceMapConsumer, className, css: string = '', cs
         offset = css.indexOf(`.${className}`, offset);
         if (offset === -1) {
             break;
+        }
+
+        const tmpchar = css[offset + className.length + 1];
+        if(/[a-zA-Z]/.test(tmpchar)) {
+            offset += 1;
+            continue;
         }
         /**
          * range {
