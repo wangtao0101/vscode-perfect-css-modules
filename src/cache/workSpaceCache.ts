@@ -95,7 +95,7 @@ export default class WorkSpaceCache {
     private regenerateDiagnostic(styleFilePath: string) {
         const relatedJsFilePaths = [];
         Object.keys(this.styleImportsCache).map(jsPath => {
-            const sis:StyleImport[] = this.styleImportsCache[jsPath];
+            const sis: StyleImport[] = this.styleImportsCache[jsPath];
             sis.map(si => {
                 if (si.styleFsPath === styleFilePath) {
                     relatedJsFilePaths.push(si.jsFsPath);
@@ -130,11 +130,9 @@ export default class WorkSpaceCache {
         });
     }
 
-    private processJsFile(file: vscode.Uri) {
-        fs.readFile(file.fsPath, 'utf8', (err, data) => {
-            if (err) {
-                return console.log(err);
-            }
+    private async processJsFile(file: vscode.Uri) {
+        try {
+            const data = await readFile(file.fsPath, 'utf8')
             const styleImports = findAllStyleImports(data, file.fsPath);
             this.styleImportsCache[file.fsPath] = styleImports;
 
@@ -143,8 +141,8 @@ export default class WorkSpaceCache {
                 const diags: Array<vscode.Diagnostic> = [];
                 const paes = compile(data, file.fsPath, styleImports);
                 const location = vfileLocation(vfile(data));
-                paes.map(pae => {
-                    const styleObject = this.getStyleObject(pae.styleImport.styleFsPath)
+                for (const pae of paes) {
+                    const styleObject = await this.getStyleAsync(pae.styleImport.styleFsPath);
                     if (styleObject != null && styleObject.locals[pae.right] == null) {
                         /**
                          * range {
@@ -157,16 +155,39 @@ export default class WorkSpaceCache {
                         const vsRange = new vscode.Range(rangeStart.line - 1, rangeStart.column - 1, rangeEnd.line - 1, rangeEnd.column - 1);
                         diags.push(new vscode.Diagnostic(vsRange, `perfect-css-module: Cannot find ${pae.right} in ${pae.left}.`, vscode.DiagnosticSeverity.Error));
                     }
-                })
+                }
                 if (diags.length !== 0) {
                     this.diagnosticCollection.set(file, diags);
                 }
             }
-        })
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    private async getStyleAsync(fsPath: string): Promise<StyleObject> {
+        let styleObject = this.getStyleObject(fsPath)
+        if (styleObject != null) {
+            return styleObject;
+        }
+        // attemp to read file and getStyleObject again
+        await this.processStyleFile(vscode.Uri.file(fsPath))
+        return this.getStyleObject(fsPath);
     }
 
     public getStyleObject(fsPath: string): StyleObject {
         return this.styleCache[fsPath];
+    }
+
+    public getJsPathByStyleFile(fsPath: string): string[] {
+        const keys =  Object.keys(this.styleImportsCache).filter(key => {
+            const styleImport = this.styleImportsCache[key];
+            if (styleImport === fsPath) {
+                return true;
+            }
+            return false;
+        })
+        return keys.map(key => this.styleImportsCache[key].jsFsPath);
     }
 
     public dispose() {

@@ -38,6 +38,15 @@ export default class Cache {
         return wsc.getStyleObject(uri.fsPath);
     }
 
+    public static getJsPathByStyleFile(uri: vscode.Uri) : string[] {
+        const workspaceFolder = vscode.workspace.getWorkspaceFolder(uri);
+        const wsc: WorkSpaceCache = Cache.styleCache[workspaceFolder.uri.fsPath];
+        if (wsc == null) {
+            return null;
+        }
+        return wsc.getJsPathByStyleFile(uri.fsPath);
+    }
+
     public static getWorkSpaceCache(uri: vscode.Uri): StyleObject {
         const workspaceFolder = vscode.workspace.getWorkspaceFolder(uri);
         return Cache.styleCache[workspaceFolder.uri.fsPath];
