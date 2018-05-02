@@ -1,27 +1,27 @@
 import * as vscode from 'vscode';
 import WorkSpaceCache from './workSpaceCache';
-import { StyleObject } from '../typings';
+import { StyleObject, StyleImport } from '../typings';
 
 export default class Cache {
-    private static styleCache = {};
+    private static cache = {};
 
     public static buildCache (diagnosticCollection) {
         if (vscode.workspace.workspaceFolders) {
             vscode.workspace.workspaceFolders.map(item => {
-                Cache.styleCache[item.uri.fsPath] = new WorkSpaceCache(item, diagnosticCollection)
+                Cache.cache[item.uri.fsPath] = new WorkSpaceCache(item, diagnosticCollection)
             })
         }
     }
 
     public static buildWorkSpaceCache(item: vscode.WorkspaceFolder, diagnosticCollection) {
         Cache.deleteWorkSpaceCache(item);
-        Cache.styleCache[item.uri.fsPath] = new WorkSpaceCache(item, diagnosticCollection);
+        Cache.cache[item.uri.fsPath] = new WorkSpaceCache(item, diagnosticCollection);
     }
 
     public static deleteWorkSpaceCache(item: vscode.WorkspaceFolder) {
-        if (Cache.styleCache[item.uri.fsPath] != null) {
-            Cache.styleCache[item.uri.fsPath].dispose();
-            delete Cache.styleCache[item.uri.fsPath];
+        if (Cache.cache[item.uri.fsPath] != null) {
+            Cache.cache[item.uri.fsPath].dispose();
+            delete Cache.cache[item.uri.fsPath];
         }
     }
 
@@ -31,24 +31,24 @@ export default class Cache {
      */
     public static getStyleObject(uri: vscode.Uri) {
         const workspaceFolder = vscode.workspace.getWorkspaceFolder(uri);
-        const wsc: WorkSpaceCache = Cache.styleCache[workspaceFolder.uri.fsPath];
+        const wsc: WorkSpaceCache = Cache.cache[workspaceFolder.uri.fsPath];
         if (wsc == null) {
             return null;
         }
         return wsc.getStyleObject(uri.fsPath);
     }
 
-    public static getJsPathByStyleFile(uri: vscode.Uri) : string[] {
+    public static getStyleImportByStyleFile(uri: vscode.Uri) : StyleImport[] {
         const workspaceFolder = vscode.workspace.getWorkspaceFolder(uri);
-        const wsc: WorkSpaceCache = Cache.styleCache[workspaceFolder.uri.fsPath];
+        const wsc: WorkSpaceCache = Cache.cache[workspaceFolder.uri.fsPath];
         if (wsc == null) {
             return null;
         }
-        return wsc.getJsPathByStyleFile(uri.fsPath);
+        return wsc.getStyleImportByStyleFile(uri.fsPath);
     }
 
     public static getWorkSpaceCache(uri: vscode.Uri): StyleObject {
         const workspaceFolder = vscode.workspace.getWorkspaceFolder(uri);
-        return Cache.styleCache[workspaceFolder.uri.fsPath];
+        return Cache.cache[workspaceFolder.uri.fsPath];
     }
 }

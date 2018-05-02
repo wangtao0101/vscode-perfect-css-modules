@@ -51,7 +51,7 @@ async function addPositoinForLocals(localKeys, css, filePath) {
     return locals;
 }
 
-export default async function processLess(source, filePath, camelCase) {
+export default async function processCss(source, filePath, camelCase) {
     try {
         const localKeys = await getLocals(source, camelCase);
         const locals = await addPositoinForLocals(localKeys, source, filePath);

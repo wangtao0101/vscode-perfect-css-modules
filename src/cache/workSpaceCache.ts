@@ -8,6 +8,7 @@ import processCss from '../css/processCss';
 import { StyleImport, StyleObject } from '../typings';
 import { findAllStyleImports } from '../util/findImportObject';
 import { compile } from '../parse';
+import { TSTypeAliasDeclaration } from '@babel/types';
 
 const vfile = require('vfile');
 const vfileLocation = require('vfile-location');
@@ -66,7 +67,6 @@ export default class WorkSpaceCache {
         const relativePatternJs = new RelativePattern(path.join(this.workspaceFolder.uri.fsPath, this.rootDir), this.jsFilesToScan);
         const jsWatcher = vscode.workspace.createFileSystemWatcher(relativePatternJs);
         jsWatcher.onDidChange((file: vscode.Uri) => {
-            const data = fs.readFileSync(file.fsPath);
             this.processJsFile(file);
         })
         jsWatcher.onDidCreate((file: vscode.Uri) => {
@@ -179,15 +179,17 @@ export default class WorkSpaceCache {
         return this.styleCache[fsPath];
     }
 
-    public getJsPathByStyleFile(fsPath: string): string[] {
-        const keys =  Object.keys(this.styleImportsCache).filter(key => {
-            const styleImport = this.styleImportsCache[key];
-            if (styleImport === fsPath) {
-                return true;
-            }
-            return false;
+    public getStyleImportByStyleFile(fsPath: string): StyleImport[] {
+        const styleImports: StyleImport[] = [];
+        Object.keys(this.styleImportsCache).filter(key => {
+            const styleImport: Array<StyleImport> = this.styleImportsCache[key];
+            styleImport.map(si => {
+                if (si.styleFsPath === fsPath) {
+                    styleImports.push(si);
+                }
+            })
         })
-        return keys.map(key => this.styleImportsCache[key].jsFsPath);
+        return styleImports;
     }
 
     public dispose() {
