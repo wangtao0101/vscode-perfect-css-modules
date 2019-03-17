@@ -1,4 +1,4 @@
 {
-    "perfect-css-modules.filesToScan": "**/*.{less,css}",
     "perfect-css-modules.rootDir": "/src",
+    "perfect-css-modules.enableDiagnostic": true,
 }

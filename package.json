@@ -59,6 +59,12 @@
                     "default": "./node_modules",
                     "description": "Specifies the node_modules directory, see https://github.com/wangtao0101/vscode-perfect-css-modules#imports",
                     "scope": "resource"
+                },
+                "perfect-css-modules.enableDiagnostic": {
+                  "type": "boolean",
+                  "default": "true",
+                  "description": "enable diagnostic, Defaults to true",
+                  "scope": "resource"
                 }
             }
         }

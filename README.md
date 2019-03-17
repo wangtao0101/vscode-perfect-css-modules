@@ -45,10 +45,13 @@ Glob for files to watch and scan. Defaults to **/*.{js,ts,jsx,tsx}
 ## perfect-css-modules.modulesPath
 Specifies the node_modules directory. Defaults to ./node_modules. See [Imports](https://github.com/wangtao0101/vscode-perfect-css-modules#imports).
 
+## perfect-css-modules.enableDiagnostic
+enable diagnostic, Defaults to true
 
 # TODO
 - [x] support js
 - [x] support ts
 - [x] support less
 - [x] support css
+- [x] support vue
 - [ ] support sass
