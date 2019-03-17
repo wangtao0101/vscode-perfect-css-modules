@@ -50,6 +50,36 @@ in vue sfc file
 goto style file
 ![GitHub Logo](https://github.com/wangtao0101/vscode-perfect-css-modules/blob/master/img/def2.gif?raw=true)
 
+## how to config in vue project
+1. enable css-modules in vue-cli
+2. enable camelCase in vue.config.js
+```
+module.exports = {
+  css: {
+    sourceMap: true,
+    loaderOptions: {
+      css: {
+        camelCase: true,
+      }
+    }
+  },
+}
+```
+
+## how to config in react project
+1. enable css-modules in css-loader
+2. enable camelCase namedExport in css-loader
+```
+{
+  loader: require.resolve('css-loader'),
+  options: {
+      modules: true,
+      namedExport: true,
+      camelCase: true,
+  },
+}
+```
+
 # Imports
 The behavior is the same as [less loader webpack resolver](https://github.com/webpack-contrib/less-loader#imports).
 
@@ -85,3 +115,4 @@ enable diagnostic, Defaults to true
 - [x] support css
 - [x] support vue
 - [ ] support sass
+- [ ] support Custom Inject Name in vue sfc
