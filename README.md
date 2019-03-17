@@ -9,6 +9,7 @@ A vscode extension for css-modules language server.
 * go to definition
 * hover tooltip
 * provide diagnostic
+* support vue scf
 
 # Snapshot
 ## autocomplete
@@ -19,6 +20,35 @@ A vscode extension for css-modules language server.
 
 ## diagnostic
 ![GitHub Logo](https://github.com/wangtao0101/vscode-perfect-css-modules/blob/master/img/dia.gif?raw=true)
+
+## vue sfc autocomplete
+add module config in style, also support import other style file from local or node_modules
+```
+<style lang="less" module>
+@import './out.modules.less';
+@import '~test/index';
+.ap-lk {
+  color: red;
+}
+
+.ap-lk {
+  color: red;
+}
+</style>
+```
+
+support autocomplete for $style in template
+![GitHub Logo](https://github.com/wangtao0101/vscode-perfect-css-modules/blob/master/img/com.gif?raw=true)
+
+support autocomplete for $style in script and support es module style
+![GitHub Logo](https://github.com/wangtao0101/vscode-perfect-css-modules/blob/master/img/comp1.gif?raw=true)
+
+## vue sfc go to definition
+in vue sfc file
+![GitHub Logo](https://github.com/wangtao0101/vscode-perfect-css-modules/blob/master/img/def1.gif?raw=true)
+
+goto style file
+![GitHub Logo](https://github.com/wangtao0101/vscode-perfect-css-modules/blob/master/img/def2.gif?raw=true)
 
 # Imports
 The behavior is the same as [less loader webpack resolver](https://github.com/webpack-contrib/less-loader#imports).

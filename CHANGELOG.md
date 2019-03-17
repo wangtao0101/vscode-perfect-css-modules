@@ -6,3 +6,7 @@
 
 ## [0.4.0] - 2018-05-02
 - improve: referenceprovider
+
+## [0.5.0] - 2019-03-17
+- improve: support vue sfc
+- improve: suport config diagnostic
