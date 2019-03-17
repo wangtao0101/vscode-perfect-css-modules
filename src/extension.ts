@@ -13,6 +13,7 @@ export function activate(context: vscode.ExtensionContext) {
         { language: "javascriptreact", scheme: "file" },
         { language: "typescript", scheme: "file" },
         { language: "typescriptreact", scheme: "file" },
+        { language: "vue", scheme: "file" },
     ];
 
     const stylemode: vscode.DocumentFilter[] = [

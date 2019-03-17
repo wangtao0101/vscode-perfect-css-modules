@@ -8,12 +8,12 @@
         "type": "git",
         "url": "https://github.com/wangtao0101/vscode-perfect-css-modules.git"
     },
-    "engines": {
-        "vscode": "^1.21.0"
-    },
     "categories": [
         "Other"
     ],
+    "engines": {
+        "vscode": "^1.21.0"
+    },
     "activationEvents": [
         "onLanguage:javascript",
         "onLanguage:javascriptreact",
@@ -21,7 +21,8 @@
         "onLanguage:typescriptreact",
         "onLanguage:css",
         "onLanguage:less",
-        "onLanguage:scss"
+        "onLanguage:scss",
+        "onLanguage:vue"
     ],
     "main": "./out/src/extension",
     "contributes": {
@@ -81,8 +82,9 @@
         "less": "^3.0.1",
         "parse-import-es6": "^0.5.9",
         "pify": "^3.0.0",
-        "typescript": "^2.8.1",
+        "typescript": "^3.3.3333",
         "vfile": "^2.3.0",
-        "vfile-location": "^2.0.2"
+        "vfile-location": "^2.0.2",
+        "vue-language-server": "^0.0.45"
     }
 }
